@@ -1,7 +1,7 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QLabel, QTextEdit, QHBoxLayout, QStackedWidget, QFormLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QTextEdit, QHBoxLayout, QStackedWidget
 from PyQt5.QtCore import pyqtSignal
-from converter import extract_text_from_pdf, convert_pdf_to_images, convert_image_to_text
+from converter import convert_pdf_to_images, convert_image_to_text
+import sys
 
 class PDFConverterGUI(QWidget):
     pdf_selected = pyqtSignal(str)  # Define um sinal para emitir o caminho do PDF
@@ -12,7 +12,7 @@ class PDFConverterGUI(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle('Conversor de Arquivos')
+        self.setWindowTitle('Multi-App')
         layout = QHBoxLayout()
 
         # Painel esquerdo para opções específicas
@@ -40,6 +40,12 @@ class PDFConverterGUI(QWidget):
         main_layout.addWidget(self.options_panel)
 
         layout.addLayout(main_layout)
+
+        # Adiciona um QTextEdit para exibir o texto
+        self.text_edit = QTextEdit()
+        self.text_edit.setReadOnly(True)  # Define como somente leitura
+        layout.addWidget(self.text_edit)
+
         self.setLayout(layout)
 
     def create_pdf_options(self):
