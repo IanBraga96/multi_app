@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QTextEdit, QHBoxLayout, QStackedWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QTextEdit, QHBoxLayout, QStackedWidget, QInputDialog, QMessageBox, QLabel
 from PyQt5.QtCore import pyqtSignal
-from converter import convert_pdf_to_images, convert_image_to_text
+from converter import convert_pdf_to_images, convert_image_to_text, convert_word_to_text, convert_excel_to_text, remove_pdf_pages
 import sys
 
 class PDFConverterGUI(QWidget):
@@ -15,10 +15,16 @@ class PDFConverterGUI(QWidget):
         self.setWindowTitle('Multi-App')
         layout = QHBoxLayout()
 
+        # Adiciona um QLabel para exibir mensagens
+        self.label = QLabel()  # Cria o QLabel
+        layout.addWidget(self.label)  # Adiciona ao layout
+
         # Painel esquerdo para opções específicas
         self.options_panel = QStackedWidget()
         self.options_panel.addWidget(self.create_pdf_options())
         self.options_panel.addWidget(self.create_image_options())
+        self.options_panel.addWidget(self.create_word_options())
+        self.options_panel.addWidget(self.create_excel_options())
         
         # Painel direito para seleção de tipo de arquivo
         self.file_type_panel = QWidget()
@@ -31,6 +37,14 @@ class PDFConverterGUI(QWidget):
         self.image_button = QPushButton('Imagem')
         self.image_button.clicked.connect(self.show_image_options)
         file_type_layout.addWidget(self.image_button)
+
+        self.word_button = QPushButton('Word')
+        self.word_button.clicked.connect(self.show_word_options)
+        file_type_layout.addWidget(self.word_button)
+
+        self.excel_button = QPushButton('Excel')
+        self.excel_button.clicked.connect(self.show_excel_options)
+        file_type_layout.addWidget(self.excel_button)
 
         self.file_type_panel.setLayout(file_type_layout)
 
@@ -59,6 +73,10 @@ class PDFConverterGUI(QWidget):
         self.pdf_image_button = QPushButton('PDF para Imagem')
         self.pdf_image_button.clicked.connect(self.open_file_dialog_pdf_image)
         layout.addWidget(self.pdf_image_button)
+
+        self.pdf_edit_button = QPushButton('Editar PDF')
+        self.pdf_edit_button.clicked.connect(self.open_file_dialog_edit_pdf)
+        layout.addWidget(self.pdf_edit_button)
 
         widget.setLayout(layout)
         return widget
@@ -97,6 +115,21 @@ class PDFConverterGUI(QWidget):
                 convert_pdf_to_images(file_path, output_folder)
                 self.label.setText(f"PDF convertido para imagens e salvo em: {output_folder}")
 
+    def open_file_dialog_edit_pdf(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(self, "Selecione o PDF", "", "PDF Files (*.pdf)", options=options)
+        if file_path:
+            text, ok = QInputDialog.getText(self, 'Remover Páginas', 'Digite os números das páginas a remover (separados por vírgula):')
+            if ok:
+                try:
+                    pages_to_remove = [int(num.strip()) - 1 for num in text.split(',') if num.strip().isdigit()]
+                    output_path, _ = QFileDialog.getSaveFileName(self, "Salvar PDF Editado", "", "PDF Files (*.pdf)")
+                    if output_path:
+                        remove_pdf_pages(file_path, pages_to_remove, output_path)
+                        QMessageBox.information(self, 'Sucesso', 'Páginas removidas com sucesso e PDF salvo!')
+                except Exception as e:
+                    QMessageBox.critical(self, 'Erro', f'Ocorreu um erro: {str(e)}')
+
     def open_file_dialog_image_text(self):
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getOpenFileName(self, "Selecione a Imagem", "", "Image Files (*.png *.jpg *.bmp)", options=options)
@@ -106,6 +139,51 @@ class PDFConverterGUI(QWidget):
 
     def display_text(self, text):
         self.text_edit.setText(text)  # Atualiza o QTextEdit com o texto extraído
+
+    def create_word_options(self):
+        widget = QWidget()
+        layout = QVBoxLayout()
+
+        self.word_text_button = QPushButton('Word para Texto')
+        self.word_text_button.clicked.connect(self.open_file_dialog_word_text)  # Dialog para abrir arquivo Word
+        layout.addWidget(self.word_text_button)
+
+        widget.setLayout(layout)
+        return widget
+    
+    def create_excel_options(self):
+        widget = QWidget()
+        layout = QVBoxLayout()
+
+        self.excel_text_button = QPushButton('Excel para Texto')
+        self.excel_text_button.clicked.connect(self.open_file_dialog_excel_text)  # Dialog para abrir arquivo Excel
+        layout.addWidget(self.excel_text_button)
+
+        widget.setLayout(layout)
+        return widget
+    
+    def show_word_options(self):
+        self.options_panel.setCurrentIndex(2)  # Mostra opções de Word
+
+    def show_excel_options(self):
+        self.options_panel.setCurrentIndex(3)  # Mostra opções de Excel
+
+    def open_file_dialog_word_text(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(self, "Selecione o Word", "", "Word Files (*.docx)", options=options)
+        if file_path:
+            text = convert_word_to_text(file_path)  # Converte o Word para texto
+            self.display_text(text)
+
+    def open_file_dialog_excel_text(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(self, "Selecione o Excel", "", "Excel Files (*.xlsx)", options=options)
+        if file_path:
+            text = convert_excel_to_text(file_path)  # Converte o Excel para texto
+            self.display_text(text)
+
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
