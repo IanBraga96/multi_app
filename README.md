@@ -25,6 +25,9 @@ Atualmente, o aplicativo permite:
 - **PIL (Pillow)**: Para manipulação de imagens.
 - **pytesseract**: Para realizar OCR em imagens.
 - **PyQt5**: Para a criação da interface gráfica.
+- **python-docx**: Para manipulação de documentos do Word.
+- **pandas**: Para manipulação de dados em tabelas.
+- **openpyxl**: Para trabalhar com arquivos Excel.
 
 ---
 
