@@ -18,3 +18,8 @@ venv/
 
 # Ignore macOS system files
 .DS_Store
+
+# pyinstaller
+build/
+dist/
+main.spec

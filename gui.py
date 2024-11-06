@@ -74,7 +74,7 @@ class PDFConverterGUI(QWidget):
         self.pdf_image_button.clicked.connect(self.open_file_dialog_pdf_image)
         layout.addWidget(self.pdf_image_button)
 
-        self.pdf_edit_button = QPushButton('Editar PDF')
+        self.pdf_edit_button = QPushButton('Editar Páginas do PDF')
         self.pdf_edit_button.clicked.connect(self.open_file_dialog_edit_pdf)
         layout.addWidget(self.pdf_edit_button)
 
