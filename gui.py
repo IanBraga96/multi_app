@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QTextEdit, QHBoxLayout, QStackedWidget, QInputDialog, QMessageBox, QLabel
 from PyQt5.QtCore import pyqtSignal
-from converter import convert_pdf_to_images, convert_image_to_text, convert_word_to_text, convert_excel_to_text, remove_pdf_pages
+from converter import convert_pdf_to_images, convert_image_to_text, convert_word_to_text, convert_excel_to_text, remove_pdf_pages, convert_word_to_pdf
 import sys
 
 class PDFConverterGUI(QWidget):
@@ -148,6 +148,10 @@ class PDFConverterGUI(QWidget):
         self.word_text_button.clicked.connect(self.open_file_dialog_word_text)  # Dialog para abrir arquivo Word
         layout.addWidget(self.word_text_button)
 
+        self.word_to_pdf_button = QPushButton('Word para PDF')
+        self.word_to_pdf_button.clicked.connect(self.open_file_dialog_word_pdf)
+        layout.addWidget(self.word_to_pdf_button)
+
         widget.setLayout(layout)
         return widget
     
@@ -181,7 +185,15 @@ class PDFConverterGUI(QWidget):
         if file_path:
             text = convert_excel_to_text(file_path)  # Converte o Excel para texto
             self.display_text(text)
-
+    def open_file_dialog_word_pdf(self):
+        options = QFileDialog.Options()
+        word_path, _ = QFileDialog.getOpenFileName(self, "Selecione o arquivo Word", "", "Word Files (*.docx)", options=options)
+        if word_path:
+            pdf_path, _ = QFileDialog.getSaveFileName(self, "Salvar como PDF", "", "PDF Files (*.pdf)", options=options)
+            if pdf_path:
+                # Chama a função de conversão
+                convert_word_to_pdf(word_path, pdf_path)
+                self.label.setText(f"Arquivo PDF salvo em: {pdf_path}")
 
 
 

@@ -4,6 +4,13 @@ from PIL import Image
 import pytesseract
 from docx import Document
 import pandas as pd
+from docx import Document
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+
 
 def extract_text_from_pdf(pdf_path):
     with open(pdf_path, 'rb') as file:
@@ -42,3 +49,23 @@ def remove_pdf_pages(pdf_path, pages_to_remove, output_path):
     
     with open(output_path, 'wb') as output_file:
         writer.write(output_file)
+
+def convert_word_to_pdf(word_path, pdf_path):
+    doc = Document(word_path)
+    # Criação do documento PDF com ReportLab
+    pdf = SimpleDocTemplate(pdf_path, pagesize=letter)
+    elements = []
+
+    # Estilo para o texto (Fonte padrão)
+    style = getSampleStyleSheet()['Normal']
+    
+    # Extrair parágrafos do Word e converter para Parágrafos do ReportLab
+    for para in doc.paragraphs:
+        paragraph_text = para.text.strip()
+        if paragraph_text:  # Não adicionar parágrafos vazios
+            paragraph = Paragraph(paragraph_text, style)
+            elements.append(paragraph)
+
+    # Gerar o PDF com o conteúdo extraído do Word
+    pdf.build(elements)
+    print(f"PDF salvo em: {pdf_path}")
