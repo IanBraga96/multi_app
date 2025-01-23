@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multi_app"
+version = "0.1.0"
+description = "Aplicativo de conversão de documentos"
+requires-python = ">=3.8"
+dependencies = [
+    "PyQt5",
+    "PyPDF2",
+    "pdf2image",
+    "pytesseract",
+    "python-docx",
+    "pandas",
+    "reportlab",
+    "Pillow"
+]

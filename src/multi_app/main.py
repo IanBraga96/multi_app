@@ -37,5 +37,3 @@ class Worker(QThread):
 if __name__ == '__main__':
     app = MyApp(sys.argv)
     sys.exit(app.exec_())
-
-# source /home/ian/Documentos/Projects/multi_app/.venv/bin/activate
